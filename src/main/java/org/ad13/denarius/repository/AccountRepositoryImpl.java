@@ -7,11 +7,12 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.ad13.denarius.controller.ResourceNotFoundException;
+import org.ad13.denarius.dto.AccountDTO;
 import org.ad13.denarius.model.Account;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class AccountDaoImp implements AccountDao {
+public class AccountRepositoryImpl implements AccountRepository {
     private EntityManager entityManager;
 
     public Account getAccount(long accountId) {
@@ -30,6 +31,14 @@ public class AccountDaoImp implements AccountDao {
     public List<Account> getAccountsForUser(long ownerId) {
         Query q = entityManager.createQuery("from Account where owner_id = 1");
         return (List<Account>) q.getResultList();
+    }
+
+    public long create(AccountDTO accountDto) {
+        Account account = new Account();
+        account.setAccountName(accountDto.getAccountName());
+        
+        account = entityManager.merge(account);       
+        return account.getAccountId();
     }
 
     public EntityManager getEntityManager() {

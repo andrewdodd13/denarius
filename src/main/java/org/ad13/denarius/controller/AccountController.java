@@ -2,15 +2,18 @@ package org.ad13.denarius.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import javax.validation.Valid;
+
+import org.ad13.denarius.dto.AccountDTO;
 import org.ad13.denarius.model.Account;
-import org.ad13.denarius.repository.AccountDao;
+import org.ad13.denarius.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,57 +28,49 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @Transactional
 @RequestMapping("/account")
-public class AjaxResponseController {
-    private static final Logger logger = LoggerFactory.getLogger(AjaxResponseController.class);
+public class AccountController {
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    private AccountDao accountsRepository;
+    private AccountRepository accountsRepository;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public @ResponseBody
-    Map<String, ? extends Object> create(@RequestBody Account account) {
-        return null;
+    @ResponseBody
+    public long create(@RequestBody AccountDTO account) {
+        return accountsRepository.create(account);
     }
 
     @RequestMapping(value = "/delete/{accountId}", method = RequestMethod.DELETE)
-    public String deleteAccount(@PathVariable String accountId) {
-        long parsedAccountId = parseId(accountId);
-        accountsRepository.deleteAccount(parsedAccountId);
+    public String deleteAccount(@PathVariable Long accountId) {
+        accountsRepository.deleteAccount(accountId);
         return "redirect:/";
     }
 
     @RequestMapping(value = "/get/{accountId}", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getAccount(@PathVariable String accountId) {
-        // Try to parse the account id
-        long parsedAccountId = parseId(accountId);
-        Account account = accountsRepository.getAccount(parsedAccountId);
+    public AccountDTO getAccount(@PathVariable Long accountId) {
+        Account account = accountsRepository.getAccount(accountId);
         if (account == null) {
             throw new ResourceNotFoundException();
         }
-        
-        return account.serializeForWeb();
+
+        return constructDTOFromAccount(account);
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public @ResponseBody
-    List<Map<String, Object>> getAccounts() {
+    List<AccountDTO> getAccounts() {
         List<Account> accounts = accountsRepository.getAccountsForUser(1);
 
-        List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+        List<AccountDTO> results = new ArrayList<AccountDTO>();
         for (Account account : accounts) {
-            results.add(account.serializeForWeb());
+            results.add(constructDTOFromAccount(account));
         }
 
         return results;
     }
 
-    private long parseId(String id) {
-        try {
-            return Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            throw new ResourceNotFoundException();
-        }
+    private AccountDTO constructDTOFromAccount(Account account) {
+        return new AccountDTO(account.getAccountId(), account.getAccountName(), account.getOwner().getUserId());
     }
-
 }

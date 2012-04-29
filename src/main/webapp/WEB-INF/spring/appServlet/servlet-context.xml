@@ -74,5 +74,5 @@
 	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
 	<!-- Repositories -->
-	<bean id="accountRepository" class="org.ad13.denarius.repository.AccountDaoImp" />
+	<bean id="accountRepository" class="org.ad13.denarius.repository.AccountRepositoryImpl" />
 </beans>
