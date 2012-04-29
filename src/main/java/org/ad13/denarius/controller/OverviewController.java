@@ -20,14 +20,6 @@ public class OverviewController {
 
 	private static final Logger logger = LoggerFactory.getLogger(OverviewController.class);
 
-	private SessionFactory sessionFactory;
-
-	@Autowired
-	public OverviewController(SessionFactory sessionFactory) {
-		super();
-		this.sessionFactory = sessionFactory;
-	}
-
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */

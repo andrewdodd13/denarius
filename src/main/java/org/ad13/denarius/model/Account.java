@@ -1,5 +1,7 @@
 package org.ad13.denarius.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -14,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account implements WebSerializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "account_id", nullable = false)
@@ -40,6 +42,14 @@ public class Account {
         this.owner = owner;
         this.accountName = accountName;
         this.entries = entries;
+    }
+
+    public Map<String, Object> serializeForWeb() {
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("accountId", accountId);
+        result.put("ownerId", owner.getUserId());
+        result.put("accountName", accountName);
+        return result;
     }
 
     public long getAccountId() {
