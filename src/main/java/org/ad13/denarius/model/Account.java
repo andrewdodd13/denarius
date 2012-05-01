@@ -11,9 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "account")
+@Table(name = "account", uniqueConstraints = @UniqueConstraint(columnNames = { "account_name", "owner_id" }))
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,7 +28,8 @@ public class Account {
     @Column(name = "account_name", nullable = false)
     private String accountName;
 
-    @OneToMany
+    @OneToMany(targetEntity = AccountEntry.class)
+    @JoinColumn(name = "account_id")
     private Set<AccountEntry> entries;
 
     public Account() {

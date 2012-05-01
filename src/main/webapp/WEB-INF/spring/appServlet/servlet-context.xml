@@ -62,7 +62,7 @@
 				<property name="database" value="MYSQL" />
 				<property name="databasePlatform" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
 				<property name="showSql" value="false" />
-				<property name="generateDdl" value="false" />
+				<property name="generateDdl" value="true" />
 			</bean>
 		</property>
 		<property name="packagesToScan" value="org.ad13.denarius.model" />

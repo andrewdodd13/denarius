@@ -15,21 +15,25 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "fullname", nullable = false)
     private String fullname;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     public User() {
         super();
     }
 
-    public User(long userId, String username, String fullname) {
+    public User(long userId, String username, String fullname, String password) {
         super();
         this.userId = userId;
         this.username = username;
         this.fullname = fullname;
+        this.password = password;
     }
 
     public long getUserId() {
@@ -54,5 +58,13 @@ public class User {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
