@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -92,13 +93,19 @@ public class AccountRepositoryImpl implements AccountRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<AccountEntry> cq = cb.createQuery(AccountEntry.class);
         Root<AccountEntry> accountEntry = cq.from(AccountEntry.class);
-        // cq.where(
-        // cb.and(
-        // cb.lessThanOrEqualTo(accountEntry.get("entryDate"), date),
-        // cb.equal(accountEntry.get("account"), account)
-        // ));
+        cq.where(cb.and(cb.lessThanOrEqualTo(accountEntry.<LocalDate> get("entryDate"), date),
+                cb.equal(accountEntry.get("account"), account)));
 
-        return entityManager.createQuery(cq).getSingleResult();
+        cq.orderBy(cb.desc(accountEntry.get("entryDate")));
+
+        TypedQuery<AccountEntry> q = entityManager.createQuery(cq);
+        q.setMaxResults(1);
+
+        try {
+            return q.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public long setAccountValue(AccountEntryDTO accountEntryDTO) {
