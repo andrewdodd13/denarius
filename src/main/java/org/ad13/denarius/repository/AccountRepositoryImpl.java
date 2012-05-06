@@ -108,6 +108,27 @@ public class AccountRepositoryImpl implements AccountRepository {
         }
     }
 
+    public List<AccountEntry> getAccountValues(long accountId, short year, short month) {
+        Account account = getAccount(accountId);
+        if (account == null) {
+            throw new ResourceNotFoundException();
+        }
+
+        LocalDate start = new LocalDate(year, month, 1);
+        LocalDate end = start.plusMonths(1);
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<AccountEntry> cq = cb.createQuery(AccountEntry.class);
+        Root<AccountEntry> accountEntry = cq.from(AccountEntry.class);
+        cq.where(cb.and(cb.greaterThanOrEqualTo(accountEntry.<LocalDate> get("entryDate"), start),
+                cb.lessThan(accountEntry.<LocalDate> get("entryDate"), end),
+                cb.equal(accountEntry.get("account"), account)));
+
+        cq.orderBy(cb.asc(accountEntry.get("entryDate")));
+
+        return entityManager.createQuery(cq).getResultList();
+    }
+
     public long setAccountValue(AccountEntryDTO accountEntryDTO) {
         AccountEntry accountEntry = new AccountEntry();
         accountEntry.setEntryDate(accountEntryDTO.getDate());

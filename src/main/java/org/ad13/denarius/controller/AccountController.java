@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.ad13.denarius.dto.AccountDTO;
 import org.ad13.denarius.dto.AccountEntryDTO;
+import org.ad13.denarius.dto.ValuedAccountDTO;
 import org.ad13.denarius.model.Account;
 import org.ad13.denarius.model.AccountEntry;
 import org.ad13.denarius.model.User;
@@ -124,6 +125,22 @@ public class AccountController {
         return results;
     }
 
+    @RequestMapping(value = "/list-values/{year}/{month}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<ValuedAccountDTO> getAccountsWithValues(@PathVariable Long year, @PathVariable Long month) {
+        List<AccountDTO> accounts = getAccounts();
+
+        List<ValuedAccountDTO> valuedAccounts = new ArrayList<ValuedAccountDTO>();
+        for (AccountDTO account : accounts) {
+            List<AccountEntryDTO> entries = new ArrayList<AccountEntryDTO>();
+
+            valuedAccounts.add(new ValuedAccountDTO(account.getAccountId(), account.getAccountName(), account
+                    .getOwnerId(), entries));
+        }
+
+        return valuedAccounts;
+    }
+
     @RequestMapping(value = "/value/{accountId}", method = RequestMethod.GET)
     @ResponseBody
     public AccountEntryDTO getAccountValueToday(@PathVariable Long accountId) {
@@ -139,7 +156,7 @@ public class AccountController {
         }
 
         AccountEntry entry = accountsRepository.getAccountValue(accountId);
-        if(entry == null) {
+        if (entry == null) {
             return null;
         }
         return constructDTOFromAccountEntry(entry);
@@ -161,7 +178,7 @@ public class AccountController {
 
         LocalDate jodaDate = LocalDate.parse(date);
         AccountEntry entry = accountsRepository.getAccountValue(accountId, jodaDate);
-        if(entry == null) {
+        if (entry == null) {
             return null;
         }
         return constructDTOFromAccountEntry(entry);
@@ -189,7 +206,7 @@ public class AccountController {
     }
 
     private AccountEntryDTO constructDTOFromAccountEntry(AccountEntry accountEntry) {
-        return new AccountEntryDTO(accountEntry.getAccountEntryId(), accountEntry.getAccount().getAccountId(), accountEntry.getEntryDate(),
-                accountEntry.getValue());
+        return new AccountEntryDTO(accountEntry.getAccountEntryId(), accountEntry.getAccount().getAccountId(),
+                accountEntry.getEntryDate(), accountEntry.getValue());
     }
 }

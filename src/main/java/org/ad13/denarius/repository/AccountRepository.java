@@ -23,5 +23,7 @@ public interface AccountRepository {
 
     public AccountEntry getAccountValue(long accountId, LocalDate date);
 
+    public List<AccountEntry> getAccountValues(long accountId, short year, short month);
+
     public long setAccountValue(AccountEntryDTO accountEntry);
 }
