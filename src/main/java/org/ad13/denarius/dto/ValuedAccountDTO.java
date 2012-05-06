@@ -1,25 +1,27 @@
 package org.ad13.denarius.dto;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.joda.time.LocalDate;
 
 public class ValuedAccountDTO extends AccountDTO {
-    private List<AccountEntryDTO> entries;
+    private Map<LocalDate, BigDecimal> entries;
 
     public ValuedAccountDTO() {
 
     }
 
-    public ValuedAccountDTO(long accountId, String accountName, long ownerId, List<AccountEntryDTO> entries) {
+    public ValuedAccountDTO(long accountId, String accountName, long ownerId, Map<LocalDate, BigDecimal> entries) {
         super(accountId, accountName, ownerId);
         this.entries = entries;
     }
 
-    public List<AccountEntryDTO> getEntries() {
+    public Map<LocalDate, BigDecimal> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<AccountEntryDTO> entries) {
+    public void setEntries(Map<LocalDate, BigDecimal> entries) {
         this.entries = entries;
     }
-
 }

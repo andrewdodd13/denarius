@@ -2,48 +2,35 @@
 <%@ page session="false" %>
 <%@ include file="common/header.jsp" %>
 	<div class="container-fluid">
+		<!-- Month Header -->
+		<div class="row-fluid border-bottom">
+			<div class="span1">
+				<h2>&lt;&lt;</h2>
+			</div>
+			<div class="span10 centered">
+				<h2 id="month-title">[Loading...]</h2>
+			</div>
+			<div class="span1">
+				<h2>&gt;&gt;</h2>
+			</div>
+		</div>
+		
 		<!-- Top Row -->
 		<div class="row-fluid">
 			<!-- Left Column: Accounts + Balances -->
 			<div class="span6">
-				<h2>Accounts &amp; Balances</h2>
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Account</th>
-							<th>1<sup>st</sup></th>
-							<th>2<sup>nd</sup></th>
-							<th>9<sup>th</sup></th>
-							<th>16<sup>th</sup></th>
-							<th>23<sup>rd</sup></th>
-							<th>30<sup>th</sup></th>
-						</tr>
-					</thead>
+				<h3>Accounts &amp; Balances</h3>
+				<table id="accounts-table" class="table">
 					<tbody>
 						<tr>
-							<td>Cash</td>
-							<td>£20.00</td>
-							<td>£20.00</td>
-							<td>£50.00</td>
-							<td>£45.00</td>
-							<td>£15.00</td>
-							<td class="value-predicted">???</td>
-						</tr>
-						<tr>
-							<td>Change</td>
-							<td>£26.49</td>
-							<td>£26.49</td>
-							<td>£26.15</td>
-							<td>£26.55</td>
-							<td>£24.45</td>
-							<td class="value-predicted">???</td>
+							<td>Loading...</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 			<!-- Right Column: Totals, Targets, Profit -->
 			<div class="span6">
-				<h2>At-A-Glance</h2>
+				<h3>At-A-Glance</h3>
 				<div class="container-fluid">
 					<div class="row-fluid">
 						<div class="span6">Overall Funds:</div>
@@ -65,7 +52,7 @@
 		<div class="row-fluid">
 			<!-- Itinerary -->
 			<div class="span12">
-				<h2>Itinerary</h2>
+				<h3>Itinerary</h3>
 				<table class="table">
 					<thead>
 						<tr>
@@ -93,4 +80,6 @@
 			</div>
 		</div>
 	</div>
+	
+	<script type="text/javascript" src="resources/js/denarius-home.js"></script>
 <%@ include file="common/footer.jsp" %>

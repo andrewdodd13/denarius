@@ -5,3 +5,8 @@ body {
 .centered {
 	text-align: center;
 }
+
+.border-bottom {
+	border-bottom: 1px solid lightgrey;
+	margin-bottom: 0.5em;
+}

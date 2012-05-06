@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +9,6 @@
 <script src="resources/js/jquery-1.7.2.min.js"></script>
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/knockout-2.0.0.js"></script>
-<script src="resources/js/denarius.js"></script>
 
 <link href="resources/css/denarius.css" rel="stylesheet" />
 <link href="resources/css/bootstrap.min.css" rel="stylesheet" />
@@ -20,11 +18,9 @@
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid">
-				<a class="btn btn-navbar" data-toggle="collapse"
-					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
-					class="icon-bar"></span> <!-- 					<span class="icon-bar"></span> -->
-				</a> <a style="float: left" href="#"><img
-					src="resources/img/logo.png" height="30" alt="denarius logo"></a>
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span>
+					<!-- 					<span class="icon-bar"></span> -->
+				</a> <a style="float: left" href="#"><img src="resources/img/logo.png" height="30" alt="denarius logo"></a>
 				<div class="nav-collapse">
 					<ul class="nav">
 						<li class="active"><a href="#">Home</a></li>

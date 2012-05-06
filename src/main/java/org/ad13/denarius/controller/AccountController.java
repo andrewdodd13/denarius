@@ -1,7 +1,10 @@
 package org.ad13.denarius.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ad13.denarius.dto.AccountDTO;
 import org.ad13.denarius.dto.AccountEntryDTO;
@@ -127,15 +130,19 @@ public class AccountController {
 
     @RequestMapping(value = "/list-values/{year}/{month}", method = RequestMethod.GET)
     @ResponseBody
-    public List<ValuedAccountDTO> getAccountsWithValues(@PathVariable Long year, @PathVariable Long month) {
+    public List<ValuedAccountDTO> getAccountsWithValues(@PathVariable Short year, @PathVariable Short month) {
         List<AccountDTO> accounts = getAccounts();
 
         List<ValuedAccountDTO> valuedAccounts = new ArrayList<ValuedAccountDTO>();
         for (AccountDTO account : accounts) {
-            List<AccountEntryDTO> entries = new ArrayList<AccountEntryDTO>();
+            Map<LocalDate, BigDecimal> entriesResult = new HashMap<LocalDate, BigDecimal>();
+            List<AccountEntry> entries = accountsRepository.getAccountValues(account.getAccountId(), year, month);
+            for (AccountEntry entry : entries) {
+                entriesResult.put(entry.getEntryDate(), entry.getValue());
+            }
 
             valuedAccounts.add(new ValuedAccountDTO(account.getAccountId(), account.getAccountName(), account
-                    .getOwnerId(), entries));
+                    .getOwnerId(), entriesResult));
         }
 
         return valuedAccounts;
