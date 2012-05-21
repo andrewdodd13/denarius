@@ -2,9 +2,19 @@ var month, year;
 
 var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
-var startDay = 0; // Monday
+var startDay = 1; // Monday
 
-var currency = '£'; // It's nice having a currency that lets everyone know where you're from :)
+var currency = '£'; // It's nice having a currency that lets everyone know where
+                    // you're from :)
+
+var accountsModel = {
+    'totals' : {},
+    'accounts' : {}
+}, statisticsModel = {
+
+}, transactionsModel = {
+
+};
 
 /**
  * Gets the ordinal for the given number assuming the number is a valid
@@ -31,7 +41,8 @@ function ordi(n) {
  * Zero pads a number for a date or month to two digits in order to conform to
  * ISO-8601. Only valid for 1-31.
  * 
- * @param n the number to pad
+ * @param n
+ *            the number to pad
  * @returns
  */
 function datePad(n) {
@@ -62,11 +73,16 @@ function reloadData() {
 
     // Fetch and parse the account data
     $.get('account/list-values/' + year + '/' + (month + 1), null, function(data, status) {
+        accountsModel['accounts'] = data;
+        accountsModel['totals'] = {
+            '1' : 0
+        };
+
         var accountsTable = $('#accounts-table');
         accountsTable.empty();
 
         // Calculate the required dates (first, last and middle weeks)
-        var firstDay = (startDay - new Date(year, month + 1, 1).getDay() + 7) % 7;
+        var firstDay = (startDay - new Date(year, month, 1).getDay() + 7) % 7 + 1;
         if (firstDay <= 1)
             firstDay += 7;
         var daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -74,8 +90,10 @@ function reloadData() {
         var calendarDates = [ 1 ];
         for ( var i = firstDay; i < daysInMonth; i += 7) {
             calendarDates.push(i);
+            accountsModel['totals'][i] = 0;
         }
         calendarDates.push(daysInMonth);
+        accountsModel['totals'][daysInMonth] = 0;
 
         // Draw header row
         var headers = "";
@@ -86,23 +104,67 @@ function reloadData() {
         accountsTable.append('<thead><tr><th>Account</th>' + headers + '</tr></thead>');
 
         // Draw content
-        var accountsTableBody = $('<tbody></tbody>');
+        var accountsTableTotals = $('<tfoot />');
+        accountsTable.append(accountsTableTotals);
+
+        var totalRow = $('<tr />');
+        accountsTableTotals.append(totalRow);
+
+        var accountsTableBody = $('<tbody />');
         accountsTable.append(accountsTableBody);
         for ( var account in data) {
             var row = $('<tr />');
             row.append('<td>' + data[account].accountName + '</tr>');
             for ( var date in calendarDates) {
                 var datestr = data[account].entries[year + '-' + datePad(month + 1) + '-' + datePad(calendarDates[date])];
-                if (datestr) {
-                    row.append('<td>' + currency + datestr.toFixed(2) + '</td>');
+                var cell;
+                if (datestr != null) {
+                    cell = $('<td>' + currency + datestr.toFixed(2) + '</td>');
+                    // Add the value to the totals row
+                    accountsModel['totals'][calendarDates[date]] += datestr;
                 } else {
-                    row.append('<td>N/A</td>');
+                    cell = $('<td>N/A</td>');
                 }
+
+                // If this date is before today then bind the ability to change
+                if (new Date(year, month, calendarDates[date]) <= new Date()) {
+                    cell.addClass('account-cell-past');
+                    cell.click(function(e) {
+                        var target = $(e.target);
+                        target.empty();
+                        target.append('<input type="text" class="input-mini" />');
+                        target.unbind('click');
+                    });
+                }
+                // Otherwise, colour the cell grey
+                else {
+                    cell.addClass('account-cell-future');
+                }
+                
+                row.append(cell);
             }
             accountsTable.append(row);
         }
-        console.log(data);
+
+        totalRow.append('<td>Totals</td>');
+        for ( var date in calendarDates) {
+            var datestr = accountsModel['totals'][calendarDates[date]];
+            if (datestr != null) {
+                totalRow.append('<td>' + currency + datestr.toFixed(2) + '</td>');
+            } else {
+                totalRow.append('<td>N/A</td>');
+            }
+        }
+        
+        console.log(accountsModel['totals']);
     });
+
+    // Fetch the statistics
+    $.get('statistics/get/' + year + '/' + (month + 1), null, function(data, status) {
+
+    });
+
+    // Fetch the transactions
 }
 
 $(document).ready(function() {

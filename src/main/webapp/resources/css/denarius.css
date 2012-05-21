@@ -10,3 +10,15 @@ body {
 	border-bottom: 1px solid lightgrey;
 	margin-bottom: 0.5em;
 }
+
+tfoot td {
+	font-weight: bold;
+}
+
+.account-cell-future {
+	color: #bbb;
+}
+
+.account-cell-past {
+	cursor: pointer;
+}
