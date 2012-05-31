@@ -3,6 +3,8 @@ package org.ad13.denarius.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.ad13.denarius.model.User;
 import org.ad13.denarius.repository.UserRepository;
 import org.ad13.denarius.service.exception.UsernameInUseException;
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class DenariusUserDetailsService implements UserDetailsService {
     public static final int ROLE_USER = 1, ROLE_ADMIN = 2;
 
-    @Autowired
+    @Resource
     private UserRepository userRepository;
 
     @Autowired
@@ -29,8 +31,8 @@ public class DenariusUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String arg0) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(arg0);
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword().toLowerCase(),
-                getGrantedAuthorities(getRoles(1)));
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword()
+                .toLowerCase(), getGrantedAuthorities(getRoles(1)));
     }
 
     public void createUser(String username, String password, String email, String fullname, int role) {
@@ -39,7 +41,8 @@ public class DenariusUserDetailsService implements UserDetailsService {
             throw new UsernameInUseException(username);
         }
 
-        userRepository.createUser(username, passwordEncoder.encodePassword(password, username), email, fullname);
+        User newUser = new User(null, username, fullname, email, passwordEncoder.encodePassword(password, username));
+        userRepository.save(newUser);
     }
 
     public User currentUser() {

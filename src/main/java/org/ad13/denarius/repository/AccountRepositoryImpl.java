@@ -16,8 +16,10 @@ import org.ad13.denarius.model.Account;
 import org.ad13.denarius.model.AccountEntry;
 import org.ad13.denarius.model.User;
 import org.joda.time.LocalDate;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+@Repository
 @Transactional
 public class AccountRepositoryImpl implements AccountRepository {
     private EntityManager entityManager;

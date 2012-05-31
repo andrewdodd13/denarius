@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:sec="http://www.springframework.org/schema/security"
-	xmlns:util="http://www.springframework.org/schema/util"
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
@@ -20,6 +18,13 @@
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- MVC Controllers -->
+	<context:component-scan base-package="org.ad13.denarius.controller" />
+	<context:component-scan base-package="org.ad13.denarius.service" />
+	<context:property-placeholder location="/WEB-INF/system.properties" />
+	
+	<jpa:repositories base-package="org.ad13.denarius.repository" />	
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
 		in the /WEB-INF/views directory -->
@@ -43,10 +48,6 @@
 		<property name="prefixJson" value="false" />
 		<property name="supportedMediaTypes" value="application/json" />
 	</bean>
-
-	<context:component-scan base-package="org.ad13.denarius.controller" />
-	<context:component-scan base-package="org.ad13.denarius.service" />
-	<context:property-placeholder location="/WEB-INF/system.properties" />
 
 	<!-- Data Source -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
@@ -89,8 +90,7 @@
 
 	<!-- Repositories -->
 	<bean id="accountRepository" class="org.ad13.denarius.repository.AccountRepositoryImpl" />
-	<bean id="userRepository" class="org.ad13.denarius.repository.UserRepositoryImpl" />
-
+	
 	<!-- Security Information -->
 	<sec:http pattern="/resources" security="none" />
 	<sec:http auto-config="true" use-expressions="true">
