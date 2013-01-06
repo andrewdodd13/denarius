@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "user")
+@Table(name = "denarius_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,7 +40,7 @@ public class User {
         this.password = password;
     }
 
-    public Long getUserId() {
+	public Long getUserId() {
         return userId;
     }
 

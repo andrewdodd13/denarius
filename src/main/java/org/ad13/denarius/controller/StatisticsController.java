@@ -35,37 +35,37 @@ public class StatisticsController {
     // @Autowired
     // private TransactionRepository transactionsRepository;
 
-    @RequestMapping(value = "/get/{year}/{month}", method = RequestMethod.GET)
-    @ResponseBody
-    public StatisticsDTO getStatisticsForMonth(@PathVariable int year, @PathVariable short month) {
-        List<Account> accounts = accountsRepository.getAccountsForUser(userDetailsService.currentUser().getUserId());
-
-        BigDecimal accountTotal = BigDecimal.ZERO, accountTotalMonthStart = BigDecimal.ZERO, accountTotalMonthEnd = BigDecimal.ZERO;
-
-        for (Account acc : accounts) {
-            // Get the total account value
-            AccountEntry entry = accountsRepository.getAccountValue(acc.getAccountId());
-            if (entry != null) {
-                accountTotal = accountTotal.add(entry.getValue());
-            }
-
-            // Get the total at the month start
-            entry = accountsRepository.getAccountValue(acc.getAccountId(), new LocalDate(year, month, 1));
-            if (entry != null) {
-                accountTotalMonthStart = accountTotalMonthStart.add(entry.getValue());
-
-                // And end (it can't be null here)
-                entry = accountsRepository.getAccountValue(acc.getAccountId(), new LocalDate(year, month, 1)
-                        .plusMonths(1).minusDays(1));
-                accountTotalMonthEnd = accountTotalMonthEnd.add(entry.getValue());
-            }
-        }
-
-        BigDecimal accountVariation = accountTotalMonthEnd.subtract(accountTotalMonthStart);
-
-        StatisticsDTO stats = new StatisticsDTO(accountTotal, new BigDecimal("1234.56"), new BigDecimal("1500.00"),
-                new BigDecimal("233"), accountVariation);
-
-        return stats;
-    }
+//    @RequestMapping(value = "/get/{year}/{month}", method = RequestMethod.GET)
+//    @ResponseBody
+//    public StatisticsDTO getStatisticsForMonth(@PathVariable int year, @PathVariable short month) {
+//        List<Account> accounts = accountsRepository.findAllByOwner(userDetailsService.currentUser());
+//
+//        BigDecimal accountTotal = BigDecimal.ZERO, accountTotalMonthStart = BigDecimal.ZERO, accountTotalMonthEnd = BigDecimal.ZERO;
+//
+//        for (Account acc : accounts) {
+//            // Get the total account value
+//            AccountEntry entry = accountsRepository.getAccountValue(acc.getAccountId());
+//            if (entry != null) {
+//                accountTotal = accountTotal.add(entry.getValue());
+//            }
+//
+//            // Get the total at the month start
+//            entry = accountsRepository.getAccountValue(acc.getAccountId(), new LocalDate(year, month, 1));
+//            if (entry != null) {
+//                accountTotalMonthStart = accountTotalMonthStart.add(entry.getValue());
+//
+//                // And end (it can't be null here)
+//                entry = accountsRepository.getAccountValue(acc.getAccountId(), new LocalDate(year, month, 1)
+//                        .plusMonths(1).minusDays(1));
+//                accountTotalMonthEnd = accountTotalMonthEnd.add(entry.getValue());
+//            }
+//        }
+//
+//        BigDecimal accountVariation = accountTotalMonthEnd.subtract(accountTotalMonthStart);
+//
+//        StatisticsDTO stats = new StatisticsDTO(accountTotal, new BigDecimal("1234.56"), new BigDecimal("1500.00"),
+//                new BigDecimal("233"), accountVariation);
+//
+//        return stats;
+//    }
 }
