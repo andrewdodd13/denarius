@@ -9,6 +9,7 @@ import org.ad13.denarius.model.AccountEntry;
 import org.ad13.denarius.model.User;
 import org.ad13.denarius.repository.AccountRepository;
 import org.ad13.denarius.repository.AccountValueRepository;
+import org.ad13.denarius.repository.UserRepository;
 import org.apache.commons.lang.Validate;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class AccountService {
 
 	@Autowired
 	private AccountValueRepository accountValueRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	/**
 	 * Returns the Account object for the given ID. If the Account object is
@@ -113,8 +117,15 @@ public class AccountService {
 	 * @param username
 	 * @return
 	 */
-	public List<Account> getAccountsForUser(long accountId) {
+	public List<Account> getAccountsForUser(long userId) {
+		User user = userRepository.findOne(userId);
+		if (user == null) {
+			throw new ResourceNotFoundException();
+		}
 
+		List<Account> accounts = accountRepository.findAllByOwner(user);
+
+		return accounts;
 	}
 
 	/**
@@ -125,7 +136,7 @@ public class AccountService {
 	 * @return
 	 */
 	public AccountEntry getAccountValueToday(long accountId) {
-		return getAccountValueOnDate(new LocalDate());
+		return getAccountValueOnDate(accountId, new LocalDate());
 	}
 
 	/**
@@ -136,7 +147,17 @@ public class AccountService {
 	 * @return
 	 */
 	public AccountEntry getAccountValueOnDate(long accountId, LocalDate date) {
+		Account account = accountRepository.findOne(accountId);
+		if (account == null) {
+			throw new ResourceNotFoundException();
+		}
 
+		List<AccountEntry> results = accountValueRepository.findByAccountBeforeDate(account, date);
+		if (results.isEmpty()) {
+			return null;
+		}
+
+		return results.get(0);
 	}
 
 	/**
@@ -151,11 +172,47 @@ public class AccountService {
 	 * @return
 	 */
 	public List<AccountEntry> getAccountValuesForMonth(long accountId, short year, short month) {
+		// Fundamental validation
+		Validate.isTrue(month > 0 && month <= 12);
 
+		Account account = accountRepository.findOne(accountId);
+		if (account == null) {
+			throw new ResourceNotFoundException();
+		}
+
+		LocalDate startDate = new LocalDate(year, month, 1);
+		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+		List<AccountEntry> results = accountValueRepository.findByAccountBetweenTwoDates(account, startDate, endDate);
+
+		return results;
 	}
-	
+
 	public AccountEntry setAccountValue(long accountId, LocalDate date, BigDecimal value) {
+		// Fundamental validation
+		Validate.notNull(date);
+		Validate.notNull(value);
+
+		Account account = accountRepository.findOne(accountId);
+		if (account == null) {
+			throw new ResourceNotFoundException();
+		}
 		
+		List<AccountEntry> existingAccountEntries = accountValueRepository.findByAccountBetweenTwoDates(account, date, date);
+		// Create new
+		if(existingAccountEntries.isEmpty()) {
+			AccountEntry accountEntry = new AccountEntry();
+			accountEntry.setAccount(account);
+			accountEntry.setEntryDate(date);
+			accountEntry.setValue(value);
+			accountValueRepository.save(accountEntry);
+			return accountEntry;
+		} else {
+			AccountEntry accountEntry = existingAccountEntries.get(0);
+			accountEntry.setValue(value);
+			accountValueRepository.save(accountEntry);
+			return accountEntry;
+		}
 	}
 
 	public AccountRepository getAccountRepository() {
@@ -174,4 +231,11 @@ public class AccountService {
 		this.accountValueRepository = accountValueRepository;
 	}
 
+	public UserRepository getUserRepository() {
+		return userRepository;
+	}
+
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 }

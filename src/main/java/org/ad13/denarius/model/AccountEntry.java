@@ -20,7 +20,7 @@ public class AccountEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "account_entry_id", nullable = false)
-    private long accountEntryId;
+    private Long accountEntryId;
 
     @ManyToOne(targetEntity = Account.class)
     @JoinColumn(name = "account_id")
@@ -36,7 +36,7 @@ public class AccountEntry {
 
     }
 
-    public AccountEntry(long accountEntryId, Account account, LocalDate entryDate, BigDecimal value) {
+    public AccountEntry(Long accountEntryId, Account account, LocalDate entryDate, BigDecimal value) {
         super();
         this.accountEntryId = accountEntryId;
         this.account = account;
@@ -44,11 +44,11 @@ public class AccountEntry {
         this.value = value;
     }
 
-    public long getAccountEntryId() {
+    public Long getAccountEntryId() {
         return accountEntryId;
     }
 
-    public void setAccountEntryId(long accountEntryId) {
+    public void setAccountEntryId(Long accountEntryId) {
         this.accountEntryId = accountEntryId;
     }
 

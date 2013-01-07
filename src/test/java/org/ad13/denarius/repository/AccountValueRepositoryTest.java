@@ -105,4 +105,70 @@ public class AccountValueRepositoryTest {
 		assertEquals(accountEntry2, accountEntries.get(0));
 		assertEquals(accountEntry1, accountEntries.get(1));
 	}
+
+	@Test
+	public void testFindBetweenTwoDates_NoEntries() {
+		// Arrange
+		Account account = new Account();
+		account.setAccountName("Test Account");
+		account = accountRepository.save(account);
+
+		AccountEntry accountEntry1 = new AccountEntry();
+		accountEntry1.setAccount(account);
+		accountEntry1.setEntryDate(new LocalDate(2012, 12, 1));
+		accountEntry1.setValue(BigDecimal.TEN);
+		accountEntry1 = accountValueRepository.save(accountEntry1);
+
+		AccountEntry accountEntry2 = new AccountEntry();
+		accountEntry2.setAccount(account);
+		accountEntry2.setEntryDate(new LocalDate(2012, 12, 15));
+		accountEntry2.setValue(BigDecimal.TEN);
+		accountEntry2 = accountValueRepository.save(accountEntry2);
+
+		AccountEntry accountEntry3 = new AccountEntry();
+		accountEntry3.setAccount(account);
+		accountEntry3.setEntryDate(new LocalDate(2013, 1, 2));
+		accountEntry3.setValue(BigDecimal.TEN);
+		accountEntry3 = accountValueRepository.save(accountEntry3);
+
+		// Act
+		List<AccountEntry> accountEntries = accountValueRepository.findByAccountBetweenTwoDates(account, new LocalDate(2012, 6, 1), new LocalDate(2012, 6, 30));
+
+		// Assert
+		assertEquals(0, accountEntries.size());
+	}
+
+	@Test
+	public void testFindBetweenTwoDates_BoundaryCheck() {
+		// Arrange
+		Account account = new Account();
+		account.setAccountName("Test Account");
+		account = accountRepository.save(account);
+
+		AccountEntry accountEntry1 = new AccountEntry();
+		accountEntry1.setAccount(account);
+		accountEntry1.setEntryDate(new LocalDate(2012, 12, 1));
+		accountEntry1.setValue(BigDecimal.TEN);
+		accountEntry1 = accountValueRepository.save(accountEntry1);
+
+		AccountEntry accountEntry2 = new AccountEntry();
+		accountEntry2.setAccount(account);
+		accountEntry2.setEntryDate(new LocalDate(2012, 12, 15));
+		accountEntry2.setValue(BigDecimal.TEN);
+		accountEntry2 = accountValueRepository.save(accountEntry2);
+
+		AccountEntry accountEntry3 = new AccountEntry();
+		accountEntry3.setAccount(account);
+		accountEntry3.setEntryDate(new LocalDate(2013, 1, 2));
+		accountEntry3.setValue(BigDecimal.TEN);
+		accountEntry3 = accountValueRepository.save(accountEntry3);
+
+		// Act
+		List<AccountEntry> accountEntries = accountValueRepository.findByAccountBetweenTwoDates(account, new LocalDate(2012, 12, 1), new LocalDate(2012, 12, 15));
+
+		// Assert
+		assertEquals(2, accountEntries.size());
+		assertEquals(accountEntry1, accountEntries.get(0));
+		assertEquals(accountEntry2, accountEntries.get(1));
+	}
 }
