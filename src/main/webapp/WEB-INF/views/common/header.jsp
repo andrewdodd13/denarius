@@ -9,6 +9,7 @@
 <script src="resources/js/jquery-1.7.2.min.js"></script>
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/knockout-2.0.0.js"></script>
+<script src="resources/js/knockout-mapping-2.3.5.min.js"></script>
 
 <link href="resources/css/denarius.css" rel="stylesheet" />
 <link href="resources/css/bootstrap.min.css" rel="stylesheet" />

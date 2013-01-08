@@ -21,11 +21,33 @@
 			<div class="span6">
 				<h3>Accounts &amp; Balances</h3>
 				<table id="accounts-table" class="table">
-					<tbody>
+					<thead>
 						<tr>
-							<td>Loading...</td>
+							<th>Account Name</th>
+							<!-- ko foreach: headers -->
+							<th data-bind="text: $data"></th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+					<tbody data-bind="foreach: accounts">
+						<tr>
+							<td data-bind="text: $data.accountName"></td>
+							<!-- ko foreach: $data.entries -->
+							<td>
+								<input type="text" data-bind="value: $data.valueOnDate" class="input-mini" />
+								<span data-bind="text: formatCurrency($data.valueOnDate)"></span>
+							</td>
+							<!-- /ko -->
 						</tr>
 					</tbody>
+					<tfoot>
+						<tr>
+							<td>Totals</td>
+							<!-- ko foreach: totals -->
+							<td data-bind="text: formatCurrency($data.totalValue)"></td>
+							<!-- /ko -->
+						</tr>
+					</tfoot>
 				</table>
 			</div>
 			<!-- Right Column: Totals, Targets, Profit -->

@@ -53,6 +53,46 @@ function datePad(n) {
     }
 }
 
+/**
+ * Formats a currency value using the currency field and 2 decimal places.
+ * @param value
+ * @returns {String}
+ */
+function formatCurrency(value) {
+	return currency + Number(value()).toFixed(2);
+}
+
+function describeDay(day, month, year, data) {
+	var dayTotal = 0,
+		dayAccounts = [];
+	
+	for(var account in data) {
+		var entry = 0,
+			dateIndex = year + '-' + datePad(month + 1) + '-' + datePad(day);
+		if(dateIndex in data[account]['entries']) {
+			entry = data[account]['entries'][dateIndex];
+		}
+		
+		dayTotal += entry;
+		
+		dayAccounts.push({
+			accountId   : data[account]['accountId'],
+			accountName : data[account]['accountName'],
+			entry       : {
+				valueOnDate : entry
+			}
+		});
+	}	
+	
+	return {
+		header: ordi(day),
+		accounts: dayAccounts,
+		total: {
+			totalValue : dayTotal
+		}
+	};
+}
+
 // TODO: Register an AJAX Error callback in case of anything going wrong
 
 function DenariusViewModel() {
@@ -61,8 +101,6 @@ function DenariusViewModel() {
     self.accounts = ko.observableArray([]);
 
 }
-
-ko.applyBindings(new DenariusViewModel());
 
 /**
  * Does a complete fetch from the server. Call this when changing month.
@@ -73,89 +111,44 @@ function reloadData() {
 
     // Fetch and parse the account data
     $.get('account/list-values/' + year + '/' + (month + 1), null, function(data, status) {
-        accountsModel['accounts'] = data;
-        accountsModel['totals'] = {
-            '1' : 0
-        };
-
-        var accountsTable = $('#accounts-table');
-        accountsTable.empty();
-
         // Calculate the required dates (first, last and middle weeks)
         var firstDay = (startDay - new Date(year, month, 1).getDay() + 7) % 7 + 1;
         if (firstDay <= 1)
             firstDay += 7;
         var daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        var calendarDates = [ 1 ];
+        // Describe the first day
+        var dayDescription = describeDay(1, month, year, data);
+        accountsModel['headers'] = [ dayDescription['header'] ];
+        accountsModel['totals'] = [ dayDescription['total'] ];
+        for (var i = 0; i < dayDescription['accounts'].length; i++) {
+        	accountsModel['accounts'] = [];
+        	accountsModel['accounts'][i] = dayDescription['accounts'][i];
+        	accountsModel['accounts'][i]['entries'] = [ accountsModel['accounts'][i]['entry'] ];
+        	delete accountsModel['accounts'][i]['entry'];
+        }
+        
+        // Describe the intermediate days
         for ( var i = firstDay; i < daysInMonth; i += 7) {
-            calendarDates.push(i);
-            accountsModel['totals'][i] = 0;
-        }
-        calendarDates.push(daysInMonth);
-        accountsModel['totals'][daysInMonth] = 0;
-
-        // Draw header row
-        var headers = "";
-        for (i in calendarDates) {
-            headers += "<th>" + ordi(calendarDates[i]) + "</th>";
-        }
-
-        accountsTable.append('<thead><tr><th>Account</th>' + headers + '</tr></thead>');
-
-        // Draw content
-        var accountsTableTotals = $('<tfoot />');
-        accountsTable.append(accountsTableTotals);
-
-        var totalRow = $('<tr />');
-        accountsTableTotals.append(totalRow);
-
-        var accountsTableBody = $('<tbody />');
-        accountsTable.append(accountsTableBody);
-        for ( var account in data) {
-            var row = $('<tr />');
-            row.append('<td>' + data[account].accountName + '</tr>');
-            for ( var date in calendarDates) {
-                var datestr = data[account].entries[year + '-' + datePad(month + 1) + '-' + datePad(calendarDates[date])];
-                var cell;
-                if (datestr != null) {
-                    cell = $('<td>' + currency + datestr.toFixed(2) + '</td>');
-                    // Add the value to the totals row
-                    accountsModel['totals'][calendarDates[date]] += datestr;
-                } else {
-                    cell = $('<td>N/A</td>');
-                }
-
-                // If this date is before today then bind the ability to change
-                if (new Date(year, month, calendarDates[date]) <= new Date()) {
-                    cell.addClass('account-cell-past');
-                    cell.click(function(e) {
-                        var target = $(e.target);
-                        target.empty();
-                        target.append('<input type="text" class="input-mini" />');
-                        target.unbind('click');
-                    });
-                }
-                // Otherwise, colour the cell grey
-                else {
-                    cell.addClass('account-cell-future');
-                }
-                
-                row.append(cell);
-            }
-            accountsTable.append(row);
-        }
-
-        totalRow.append('<td>Totals</td>');
-        for ( var date in calendarDates) {
-            var datestr = accountsModel['totals'][calendarDates[date]];
-            if (datestr != null) {
-                totalRow.append('<td>' + currency + datestr.toFixed(2) + '</td>');
-            } else {
-                totalRow.append('<td>N/A</td>');
+        	dayDescription = describeDay(i, month, year, data);
+        	accountsModel['headers'].push(dayDescription['header']);
+            accountsModel['totals'].push(dayDescription['total']);
+            for (var accountI = 0; accountI < dayDescription['accounts'].length; accountI++) {
+            	accountsModel['accounts'][accountI]['entries'].push(dayDescription['accounts'][accountI]['entry']);
             }
         }
         
+        // Describe the last day
+    	dayDescription = describeDay(daysInMonth, month, year, data);
+        accountsModel['headers'].push(dayDescription['header']);
+        accountsModel['totals'].push(dayDescription['total']);
+        for (var i = 0; i < dayDescription['accounts'].length; i++) {
+        	accountsModel['accounts'][i]['entries'].push(dayDescription['accounts'][i]['entry']);
+        }
+                
+        accountsModel = ko.mapping.fromJS(accountsModel);
+        ko.applyBindings(accountsModel);
+
         console.log(accountsModel['totals']);
     });
 
