@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 @Entity
@@ -27,6 +28,7 @@ public class AccountEntry {
     private Account account;
 
     @Column(name = "entry_date", nullable = false)
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate entryDate;
 
     @Column(name = "entry_value", nullable = false)
