@@ -22,3 +22,7 @@ tfoot td {
 .account-cell-past {
 	cursor: pointer;
 }
+
+.account-entry-field {
+	display: none;
+}

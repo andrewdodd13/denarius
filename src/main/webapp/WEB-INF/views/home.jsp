@@ -34,8 +34,8 @@
 							<td data-bind="text: $data.accountName"></td>
 							<!-- ko foreach: $data.entries -->
 							<td>
-								<input type="text" data-bind="value: $data.valueOnDate" class="input-mini" />
-								<span data-bind="text: formatCurrency($data.valueOnDate)"></span>
+								<input type="text" data-bind="value: $data.valueOnDate" class="input-mini account-entry-field" />
+								<span data-bind="text: formatCurrency($data.valueOnDate)" class="account-entry-value"></span>
 							</td>
 							<!-- /ko -->
 						</tr>
@@ -44,7 +44,7 @@
 						<tr>
 							<td>Totals</td>
 							<!-- ko foreach: totals -->
-							<td data-bind="text: formatCurrency($data.totalValue)"></td>
+							<td data-bind="text: formatCurrency($data.valueTotal)"></td>
 							<!-- /ko -->
 						</tr>
 					</tfoot>
